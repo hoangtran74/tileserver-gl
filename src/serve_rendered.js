@@ -21,6 +21,7 @@ import clone from 'clone';
 import Color from 'color';
 import express from 'express';
 import sanitize from 'sanitize-filename';
+import sanitizeHtml from 'sanitize-html'
 import SphericalMercator from '@mapbox/sphericalmercator';
 import mlgl from '@maplibre/maplibre-gl-native';
 import polyline from '@mapbox/polyline';
@@ -1014,7 +1015,7 @@ export const serve_rendered = {
         info.format,
         item.publicUrl,
       );
-      return res.send(info);
+      return res.send(sanitizeHtml(info));
     });
 
     const fonts = await listFonts(options.paths.fonts);
@@ -1071,7 +1072,7 @@ export const serve_rendered = {
               const file = decodeURIComponent(req.url).substring(
                 protocol.length + 3,
               );
-              readFile(path.join(dir, file))
+              readFile(escape(path.join(dir, file)))
                 .then((data) => {
                   callback(null, { data: data });
                 })
@@ -1200,7 +1201,7 @@ export const serve_rendered = {
                   );
                 }
 
-                readFile(file)
+                readFile(sanitize(file))
                   .then((data) => {
                     callback(null, { data: data });
                   })
